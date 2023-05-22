@@ -23,6 +23,7 @@ class MyDBHandler(context: Context, name: String?,
                           const val COLUMN_TITLE = "title"
                           const val COLUMN_TITLE_PL = "title_pl"
                           const val COLUMN_RELEASED = "released"
+                          const val COLUMN_IMAGE = "image"
                       }
 
     private val dateFormat: DateFormat = SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
@@ -34,7 +35,8 @@ class MyDBHandler(context: Context, name: String?,
                 COLUMN_ID + " DOUBLE PRIMARY KEY," +
                 COLUMN_TITLE + " TEXT," +
                 COLUMN_TITLE_PL + " TEXT," +
-                COLUMN_RELEASED + " INTEGER" + ")")
+                COLUMN_RELEASED + " INTEGER," +
+                COLUMN_IMAGE + " TEXT" + ")")
         db.execSQL(CREATE_GAMES_TABLE)
     }
 
@@ -49,6 +51,7 @@ class MyDBHandler(context: Context, name: String?,
         values.put(COLUMN_TITLE_PL, game.titlePL)
         values.put(COLUMN_RELEASED, game.released)
         values.put(COLUMN_ID, game.id)
+        values.put(COLUMN_IMAGE, game.image)
 
         val db = this.writableDatabase
         db.insert(TABLE_GAMES, null, values)
@@ -71,7 +74,8 @@ class MyDBHandler(context: Context, name: String?,
             val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
             val title_pl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE_PL))
             val yearPublished = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RELEASED))
-            val game = Game(title, title_pl, yearPublished, id)
+            val image = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE))
+            val game = Game(title, title_pl, yearPublished, id, image)
             boardGames.add(game)
         }
         cursor.close()
