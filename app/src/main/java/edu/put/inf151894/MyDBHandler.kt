@@ -68,7 +68,7 @@ class MyDBHandler(context: Context, name: String?,
         val db = this.writableDatabase
 
         val boardGames = mutableListOf<Game>()
-        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_GAMES", null)
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_GAMES ORDER BY $COLUMN_TITLE", null)
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
             val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))

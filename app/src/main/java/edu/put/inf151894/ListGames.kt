@@ -25,8 +25,14 @@ class ListGames : AppCompatActivity() {
 
         val dbHandler = MyDBHandler(this, null,null,1)
         val games = dbHandler.getAllBoardGames()
+        val adapter: Adapter = Adapter(this, games)
 
-        recyclerView.adapter = Adapter(this, games)
+        recyclerView.adapter = adapter
+        adapter.setOnClickListener(object: Adapter.OnClickListener {
+            override fun onClick(position: Int, model: Game) {
+                Log.d("onclick","test ${model.title}")
+            }
+        })
     }
 
 
