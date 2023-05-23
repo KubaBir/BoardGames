@@ -9,10 +9,10 @@ import android.widget.Button
 import android.widget.EditText
 import java.time.LocalDate
 
-class Setup : AppCompatActivity() {
+class SetupActivity : AppCompatActivity() {
 
-    lateinit var usernameInput: EditText
-    lateinit var confirmBtn: Button
+    private lateinit var usernameInput: EditText
+    private lateinit var confirmBtn: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,23 +31,22 @@ class Setup : AppCompatActivity() {
             cache.edit().putString("lastSync", LocalDate.now().toString()).apply()
             cache.edit().putBoolean("configDone", true).apply()
 
-            var url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username","") +
-                      "&subtype=boardgame&excludesubtype=boardgameexpansion"
+            val url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username","") +
+                      "&subtype=boardgame&excludesubtype=boardgameexpansion" + "&stats=1"
             val games = XmlParserTask().execute(url)
             val dbHandler = MyDBHandler(this, null,null,1)
 
             var numGames = 0
             for (game in games.get()) {
                 numGames += 1
-                Log.d("dodaje", "${game.title}")
                 dbHandler.addGame(game)
             }
-            Log.d("RES", "Dodano: ${numGames} gier")
+            Log.d("RES", "Dodano: $numGames gier")
             dbHandler.close()
 
             cache.edit().putString("numGames", numGames.toString()).apply()
 
-            startActivity(Intent(this, MainMenu::class.java))
+            startActivity(Intent(this, MainMenuActivity::class.java))
         }
     }
 }

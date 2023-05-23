@@ -3,8 +3,6 @@ package edu.put.inf151894
 
 import android.os.AsyncTask
 import android.util.Log
-import org.xmlpull.v1.XmlPullParserException
-import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -49,20 +47,32 @@ class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
                 val yearPublishedElement = elem.getElementsByTagName("yearpublished").item(0)
                 val released = yearPublishedElement?.textContent?.toIntOrNull() ?: 0
 
-//                val imageElement = elem.getElementsByTagName("image").item(0)
-//                val image = imageElement?.textContent ?: ""
+                val imageElement = elem.getElementsByTagName("image").item(0)
+                val image = imageElement?.textContent ?: ""
 
                 val thumbnailElement = elem.getElementsByTagName("thumbnail").item(0)
                 val thumbnail = thumbnailElement?.textContent ?: ""
 
                 val id = elem.getAttribute("objectid").toInt()
 
+                val stats = elem.getElementsByTagName("stats").item(0) as org.w3c.dom.Element
+                val minPlayers = stats.getAttribute("minplayers").toInt()
+                val maxPlayers = stats.getAttribute("maxplayers").toInt()
+
+                val rating = stats.getElementsByTagName("rating").item(0) as org.w3c.dom.Element
+                val avgRatingField = rating.getElementsByTagName("average").item(0) as org.w3c.dom.Element
+                val avgRating = avgRatingField.getAttribute("value").toFloat()
+
                 val game = Game(
-                    name,
-                    name,
-                    released,
-                    id,
-                    thumbnail,
+                    title = name,
+                    titlePL = name,
+                    released = released,
+                    id = id,
+                    image = image,
+                    thumbnail = thumbnail,
+                    minPlayers = minPlayers,
+                    maxPlayers = maxPlayers,
+                    avgRating = avgRating
                 )
                 games.add(game)
             }

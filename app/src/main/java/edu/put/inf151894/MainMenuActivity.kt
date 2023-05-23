@@ -4,22 +4,21 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import java.time.LocalDate
 
-class MainMenu : AppCompatActivity() {
+class MainMenuActivity : AppCompatActivity() {
 
-    lateinit var usernameField: TextView
-    lateinit var numGames: TextView
-    lateinit var numExpansions: TextView
-    lateinit var lastSync: TextView
+    private lateinit var usernameField: TextView
+    private lateinit var numGames: TextView
+    private lateinit var numExpansions: TextView
+    private lateinit var lastSync: TextView
 
-    lateinit var gameList: Button
-    lateinit var expansionList: Button
-    lateinit var sync: Button
-    lateinit var restoreDefaults: Button
+    private lateinit var gameList: Button
+    private lateinit var expansionList: Button
+    private lateinit var sync: Button
+    private lateinit var restoreDefaults: Button
 
 
 
@@ -54,7 +53,7 @@ class MainMenu : AppCompatActivity() {
             dbHandler.close()
 
             // Enter configuration
-            startActivity(Intent(this, Setup::class.java))
+            startActivity(Intent(this, SetupActivity::class.java))
         }
 
         sync.setOnClickListener {
@@ -66,7 +65,7 @@ class MainMenu : AppCompatActivity() {
         }
 
         gameList.setOnClickListener {
-            startActivity(Intent(this, ListGames::class.java))
+            startActivity(Intent(this, ListGamesActivity::class.java))
 
         }
     }

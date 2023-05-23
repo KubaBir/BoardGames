@@ -4,10 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,10 +13,10 @@ class MainActivity : AppCompatActivity() {
         val cache = getSharedPreferences("cache", Context.MODE_PRIVATE)
         if(cache.getBoolean("configDone", false)) {
             // List games if account is linked
-            startActivity(Intent(this, MainMenu::class.java))
+            startActivity(Intent(this, MainMenuActivity::class.java))
         } else {
             // Enter setup if not done already
-            startActivity(Intent(this, Setup::class.java))
+            startActivity(Intent(this, SetupActivity::class.java))
         }
     }
 }
