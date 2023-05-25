@@ -13,14 +13,6 @@ class Game {
     var avgRating: Float = 0.0f
 
 
-    constructor(title: String?, titlePL: String?, released: Int, id: Int, image: String?) {
-        this.title = title
-        this.titlePL = titlePL
-        this.released = released
-        this.id = id
-        this.image = image
-    }
-
     constructor(
         title: String?,
         titlePL: String?,

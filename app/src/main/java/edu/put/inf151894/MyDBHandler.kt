@@ -29,11 +29,12 @@ class MyDBHandler(context: Context, name: String?,
                           const val TABLE_PICTURES = "pictures"
                           const val COLUMN_GAME_ID = "game_id"
                           const val COLUMN_PICTURE_ID = "picture_id"
+
+                          const val TABLE_EXPANSIONS = "expansions"
                       }
 
     override fun onCreate(db: SQLiteDatabase) {
-        val CREATE_GAMES_TABLE = ("CREATE TABLE IF NOT EXISTS " +
-                TABLE_GAMES + "(" +
+        val CREATE_GAMES_TABLE = ("CREATE TABLE IF NOT EXISTS " + TABLE_GAMES + "(" +
                 COLUMN_ID + " DOUBLE PRIMARY KEY," +
                 COLUMN_TITLE + " TEXT," +
                 COLUMN_TITLE_PL + " TEXT," +
@@ -58,11 +59,28 @@ class MyDBHandler(context: Context, name: String?,
             Log.e("sql", "${e.message}")
         }
 
+        val CREATE_EXPANSIONS_TABLE = ("CREATE TABLE IF NOT EXISTS " + TABLE_EXPANSIONS + "(" +
+                COLUMN_ID + " DOUBLE PRIMARY KEY," +
+                COLUMN_TITLE + " TEXT," +
+                COLUMN_TITLE_PL + " TEXT," +
+                COLUMN_RELEASED + " INTEGER," +
+                COLUMN_IMAGE + " TEXT," +
+                COLUMN_THUMBNAIL + " TEXT," +
+                COLUMN_MINPLAYERS + " INTEGER," +
+                COLUMN_MAXPLAYERS + " INTEGER," +
+                COLUMN_AVGRATING + " FLOAT" + ")")
+        try{
+            db.execSQL(CREATE_EXPANSIONS_TABLE)
+        } catch (e: SQLException) {
+            Log.e("sql", "${e.message}")
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_GAMES")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_PICTURES")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_EXPANSIONS")
+
         onCreate(db)
     }
 
@@ -83,6 +101,23 @@ class MyDBHandler(context: Context, name: String?,
         db.close()
     }
 
+    fun addExpansion(game: Game) {
+        val values = ContentValues()
+        values.put(COLUMN_TITLE, game.title)
+        values.put(COLUMN_TITLE_PL, game.titlePL)
+        values.put(COLUMN_RELEASED, game.released)
+        values.put(COLUMN_ID, game.id)
+        values.put(COLUMN_IMAGE, game.image)
+        values.put(COLUMN_THUMBNAIL, game.thumbnail)
+        values.put(COLUMN_MINPLAYERS, game.minPlayers)
+        values.put(COLUMN_MAXPLAYERS, game.maxPlayers)
+        values.put(COLUMN_AVGRATING, game.avgRating)
+
+        val db = this.writableDatabase
+        db.insert(TABLE_EXPANSIONS, null, values)
+        db.close()
+    }
+
     fun addPicture(game: Game, picPath: String) {
         val values = ContentValues()
 
@@ -99,13 +134,15 @@ class MyDBHandler(context: Context, name: String?,
         val db = this.writableDatabase
         db.delete(TABLE_GAMES, null, null)
         db.delete(TABLE_PICTURES, null, null)
+        db.delete(TABLE_EXPANSIONS, null, null)
+
         //db.execSQL("DROP TABLE IF EXISTS $TABLE_GAMES")
     }
 
-    fun getAllBoardGames(): List<Game> {
+    fun getAllGames(): List<Game> {
         val db = this.writableDatabase
 
-        val boardGames = mutableListOf<Game>()
+        val games = mutableListOf<Game>()
         val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_GAMES ORDER BY $COLUMN_TITLE", null)
         while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
@@ -119,11 +156,35 @@ class MyDBHandler(context: Context, name: String?,
             val avgRating = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_AVGRATING))
 
             val game = Game(title, titlePl, yearPublished, id, image, thumbnail, minPlayers,maxPlayers,avgRating)
-            boardGames.add(game)
+            games.add(game)
         }
         cursor.close()
         db.close()
-        return boardGames
+        return games
+    }
+
+    fun getAllExpansions(): List<Game> {
+        val db = this.writableDatabase
+
+        val games = mutableListOf<Game>()
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_EXPANSIONS ORDER BY $COLUMN_TITLE", null)
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+            val titlePl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE_PL))
+            val yearPublished = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RELEASED))
+            val image = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE))
+            val thumbnail = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_THUMBNAIL))
+            val minPlayers = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MINPLAYERS))
+            val maxPlayers = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAXPLAYERS))
+            val avgRating = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_AVGRATING))
+
+            val game = Game(title, titlePl, yearPublished, id, image, thumbnail, minPlayers,maxPlayers,avgRating)
+            games.add(game)
+        }
+        cursor.close()
+        db.close()
+        return games
     }
 
     fun getGameById(id: Int): Game {
@@ -141,7 +202,23 @@ class MyDBHandler(context: Context, name: String?,
         val avgRating = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_AVGRATING))
         val game = Game(title, titlePl, yearPublished, id, image, thumbnail, minPlayers,maxPlayers,avgRating)
         return game
+    }
 
+    fun getExpansionById(id: Int): Game {
+        val db = this.writableDatabase
+        val cursor: Cursor = db.rawQuery("SELECT * FROM $TABLE_EXPANSIONS WHERE $COLUMN_ID = $id", null)
+        cursor.moveToFirst()
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+        val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+        val titlePl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE_PL))
+        val yearPublished = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RELEASED))
+        val image = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE))
+        val thumbnail = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_THUMBNAIL))
+        val minPlayers = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MINPLAYERS))
+        val maxPlayers = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAXPLAYERS))
+        val avgRating = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_AVGRATING))
+        val game = Game(title, titlePl, yearPublished, id, image, thumbnail, minPlayers,maxPlayers,avgRating)
+        return game
     }
 
     fun getPicturesByGame(game: Game): List<String> {

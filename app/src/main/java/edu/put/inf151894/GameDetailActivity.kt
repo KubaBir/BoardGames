@@ -37,6 +37,8 @@ import kotlin.math.roundToInt
 class GameDetailActivity : AppCompatActivity() {
 
     private lateinit var image: ImageView
+    private lateinit var imageFullScreen: ImageView
+
     private lateinit var avgRating: TextView
     private lateinit var playerCount: TextView
     private lateinit var releasedIn: TextView
@@ -53,22 +55,31 @@ class GameDetailActivity : AppCompatActivity() {
     private lateinit var pictures: List<String>
     private var currentPictureIndex: Int = 0
 
-    val SELECT_PICTURE = 200
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityGameDetailViewBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
         val gameId = intent.getIntExtra("gameId", 0)
+        val type = intent.getStringExtra("type")
         dbHandler = MyDBHandler(this, null,null,1)
-        game = dbHandler.getGameById(gameId)
+
+        if (type == "game") {
+            game = dbHandler.getGameById(gameId)
+        } else {
+            game = dbHandler.getExpansionById(gameId)
+        }
         pictures = dbHandler.getPicturesByGame(game)
 
         preview = findViewById(R.id.viewFinder)
 
         image = findViewById(R.id.imageView)
         image.load(game.image)
+
+        imageFullScreen = findViewById(R.id.imageFullScreen)
+        imageFullScreen.load(game.image)
+
+        cameraExecutor = Executors.newSingleThreadExecutor()
 
         avgRating = findViewById(R.id.avgRating)
         playerCount = findViewById(R.id.playerCount)
@@ -80,7 +91,20 @@ class GameDetailActivity : AppCompatActivity() {
 
 
 
-
+        image.setOnClickListener {
+            imageFullScreen.visibility = View.VISIBLE
+            image.visibility = View.INVISIBLE
+            avgRating.visibility = View.INVISIBLE
+            playerCount.visibility = View.INVISIBLE
+            releasedIn.visibility = View.INVISIBLE
+        }
+        imageFullScreen.setOnClickListener {
+            image.visibility = View.VISIBLE
+            imageFullScreen.visibility = View.GONE
+            avgRating.visibility = View.VISIBLE
+            playerCount.visibility = View.VISIBLE
+            releasedIn.visibility = View.VISIBLE
+        }
         viewBinding.btnAdd.setOnClickListener {
             showImageSourceSelector()
         }
@@ -88,15 +112,20 @@ class GameDetailActivity : AppCompatActivity() {
             if (currentPictureIndex < pictures.size) {
                 currentPictureIndex += 1
                 image.load(pictures[currentPictureIndex - 1])
+                imageFullScreen.load(pictures[currentPictureIndex - 1])
             }
         }
         viewBinding.btnPrev.setOnClickListener {
             if (currentPictureIndex > 1) {
                 currentPictureIndex -= 1
                 image.load(pictures[currentPictureIndex - 1])
+                imageFullScreen.load(pictures[currentPictureIndex - 1])
+
             } else if (currentPictureIndex == 1) {
                 currentPictureIndex = 0
                 image.load(game.image)
+                imageFullScreen.load(game.image)
+
             }
         }
         viewBinding.btnDelete.setOnClickListener {
@@ -229,7 +258,6 @@ class GameDetailActivity : AppCompatActivity() {
         } else {
             requestPermissions()
         }
-        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
     override fun onDestroy() {

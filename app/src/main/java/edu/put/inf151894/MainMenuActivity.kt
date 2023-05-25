@@ -42,6 +42,7 @@ class MainMenuActivity : AppCompatActivity() {
         usernameField.text = cache.getString("username", "")
         lastSync.text = cache.getString("lastSync", "Never")
         numGames.text = cache.getString("numGames", "0")
+        numExpansions.text = cache.getString("numExpansions", "0")
 
         restoreDefaults.setOnClickListener {
             // Format cache
@@ -65,8 +66,15 @@ class MainMenuActivity : AppCompatActivity() {
         }
 
         gameList.setOnClickListener {
-            startActivity(Intent(this, ListGamesActivity::class.java))
+            var intent = Intent(this, ListGamesActivity::class.java)
+            intent.putExtra("type", "games")
+            startActivity(intent)
+        }
 
+        expansionList.setOnClickListener {
+            var intent = Intent(this, ListGamesActivity::class.java)
+            intent.putExtra("type", "expansions")
+            startActivity(intent)
         }
     }
 }

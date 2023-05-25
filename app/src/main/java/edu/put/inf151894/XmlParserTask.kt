@@ -53,15 +53,25 @@ class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
                 val thumbnailElement = elem.getElementsByTagName("thumbnail").item(0)
                 val thumbnail = thumbnailElement?.textContent ?: ""
 
-                val id = elem.getAttribute("objectid").toInt()
+                val id = elem.getAttribute("objectid").toInt() ?: 0
 
-                val stats = elem.getElementsByTagName("stats").item(0) as org.w3c.dom.Element
-                val minPlayers = stats.getAttribute("minplayers").toInt()
-                val maxPlayers = stats.getAttribute("maxplayers").toInt()
+                var minPlayers = 0
+                var maxPlayers = 0
+                var avgRating = 0f
+                val testStats = elem.getElementsByTagName("stats").item(0)
+//                if (testStats != null) {
+//                    val stats = testStats as org.w3c.dom.Element
+//                    minPlayers = stats.getAttribute("minplayers")?.toInt() ?: 0
+//                    maxPlayers = stats.getAttribute("maxplayers")?.toInt() ?: 0
+//
+//                    val rating = stats.getElementsByTagName("rating")?.item(0) as org.w3c.dom.Element
+//                    val avgRatingField = rating.getElementsByTagName("average")?.item(0) as org.w3c.dom.Element
+//                    avgRating = avgRatingField.getAttribute("value")?.toFloat() ?: 0f
+//                }
 
-                val rating = stats.getElementsByTagName("rating").item(0) as org.w3c.dom.Element
-                val avgRatingField = rating.getElementsByTagName("average").item(0) as org.w3c.dom.Element
-                val avgRating = avgRatingField.getAttribute("value").toFloat()
+
+
+
 
                 val game = Game(
                     title = name,

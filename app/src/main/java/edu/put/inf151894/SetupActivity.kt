@@ -31,9 +31,15 @@ class SetupActivity : AppCompatActivity() {
             cache.edit().putString("lastSync", LocalDate.now().toString()).apply()
             cache.edit().putBoolean("configDone", true).apply()
 
-            val url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username","") +
+            var url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username","") +
                       "&subtype=boardgame&excludesubtype=boardgameexpansion" + "&stats=1"
             val games = XmlParserTask().execute(url)
+
+            url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username", "") +
+                   "&subtype=boardgameexpansion" + "&stats=1"
+
+            val expansions = XmlParserTask().execute(url)
+
             val dbHandler = MyDBHandler(this, null,null,1)
 
             var numGames = 0
@@ -42,9 +48,19 @@ class SetupActivity : AppCompatActivity() {
                 dbHandler.addGame(game)
             }
             Log.d("RES", "Dodano: $numGames gier")
+
+            var numExpansions = 0
+            for (game in expansions.get()) {
+                numExpansions += 1
+                dbHandler.addExpansion(game)
+            }
+            Log.d("RES", "Dodano: $numExpansions dodatkow")
+
             dbHandler.close()
 
             cache.edit().putString("numGames", numGames.toString()).apply()
+            cache.edit().putString("numExpansions", numExpansions.toString()).apply()
+
 
             startActivity(Intent(this, MainMenuActivity::class.java))
         }
