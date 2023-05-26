@@ -1,14 +1,11 @@
 package edu.put.inf151894
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import java.time.LocalDate
 
 class MainMenuActivity : AppCompatActivity() {
 
@@ -77,18 +74,18 @@ class MainMenuActivity : AppCompatActivity() {
         }
 
         sync.setOnClickListener {
-            var intent = Intent(this, SyncActivity::class.java)
+            val intent = Intent(this, SyncActivity::class.java)
             startActivity(intent)
         }
 
         gameList.setOnClickListener {
-            var intent = Intent(this, ListGamesActivity::class.java)
+            val intent = Intent(this, ListGamesActivity::class.java)
             intent.putExtra("type", "games")
             startActivity(intent)
         }
 
         expansionList.setOnClickListener {
-            var intent = Intent(this, ListGamesActivity::class.java)
+            val intent = Intent(this, ListGamesActivity::class.java)
             intent.putExtra("type", "expansions")
             startActivity(intent)
         }

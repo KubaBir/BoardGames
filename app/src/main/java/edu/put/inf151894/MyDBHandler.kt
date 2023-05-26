@@ -201,6 +201,9 @@ class MyDBHandler(context: Context, name: String?,
         val maxPlayers = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAXPLAYERS))
         val avgRating = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_AVGRATING))
         val game = Game(title, titlePl, yearPublished, id, image, thumbnail, minPlayers,maxPlayers,avgRating)
+
+        db.close()
+        cursor.close()
         return game
     }
 
@@ -218,6 +221,10 @@ class MyDBHandler(context: Context, name: String?,
         val maxPlayers = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_MAXPLAYERS))
         val avgRating = cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_AVGRATING))
         val game = Game(title, titlePl, yearPublished, id, image, thumbnail, minPlayers,maxPlayers,avgRating)
+
+        db.close()
+        cursor.close()
+
         return game
     }
 

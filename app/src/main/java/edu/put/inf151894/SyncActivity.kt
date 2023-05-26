@@ -2,7 +2,6 @@ package edu.put.inf151894
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -53,15 +52,16 @@ class SyncActivity : AppCompatActivity() {
 
         if(lastSyncLong < Instant.now().minusSeconds(86400).toEpochMilli()) {
             Toast.makeText(this, "Synchronization started", Toast.LENGTH_SHORT).show()
+            btnBack.visibility = View.INVISIBLE
             syncProgressText.visibility = View.VISIBLE
             progressBar.visibility = View.VISIBLE
-            Thread(Runnable {
+            Thread{
 
                 var url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username","") +
                         "&subtype=boardgame&excludesubtype=boardgameexpansion" + "&stats=1"
-                var games = XmlParserTask().execute(url)
+                var games = FetchData().execute(url)
                 if(games.get().isEmpty()) {
-                    games = XmlParserTask().execute(url)
+                    games = FetchData().execute(url)
                 }
                 runOnUiThread {
                     progressBar.setProgress(20, true)
@@ -70,9 +70,9 @@ class SyncActivity : AppCompatActivity() {
 
                 url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username", "") +
                         "&subtype=boardgameexpansion" + "&stats=1"
-                var expansions = XmlParserTask().execute(url)
+                var expansions = FetchData().execute(url)
                 if(expansions.get().isEmpty()) {
-                    expansions = XmlParserTask().execute(url)
+                    expansions = FetchData().execute(url)
                 }
                 runOnUiThread {
                     progressBar.setProgress(40, true)
@@ -86,8 +86,8 @@ class SyncActivity : AppCompatActivity() {
                 }
                 Thread.sleep(250)
 
-                var existingGameIds = mutableListOf<Int>()
-                var existingExpansionIds = mutableListOf<Int>()
+                val existingGameIds = mutableListOf<Int>()
+                val existingExpansionIds = mutableListOf<Int>()
 
                 var numExpansions = 0
                 for (game in expansions.get()) {
@@ -116,11 +116,12 @@ class SyncActivity : AppCompatActivity() {
                     cache.edit().putString("lastSync", LocalDate.now().toString()).apply()
                     cache.edit().putLong("lastSyncMillis", Instant.now().toEpochMilli()).apply()
                     lastSync.text = cache.getString("lastSync", "")
+                    btnBack.visibility = View.VISIBLE
+
                     Toast.makeText(this, "Synchronization completed!", Toast.LENGTH_SHORT).show()
                 }
-            }).start()
+            }.start()
         }
         else Toast.makeText(this, "Data is already synchronised!", Toast.LENGTH_SHORT).show()
-
     }
 }

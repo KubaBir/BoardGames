@@ -1,17 +1,14 @@
 package edu.put.inf151894
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import java.time.Instant
 import java.time.LocalDate
 
 class SetupActivity : AppCompatActivity() {
@@ -27,9 +24,6 @@ class SetupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setup)
 
-        val cache = getSharedPreferences("cache", Context.MODE_PRIVATE)
-
-
         syncProgressText = findViewById(R.id.syncProgressText)
         usernameInput = findViewById(R.id.usernameInput)
         confirmBtn = findViewById(R.id.btnConfirm)
@@ -38,12 +32,7 @@ class SetupActivity : AppCompatActivity() {
         progressBar.max = 100
         progressBar.visibility = View.INVISIBLE
 
-        confirmBtn.setOnClickListener {
-//            if (cache.getBoolean("configDone", false))
-//                startActivity(Intent(this,MainMenuActivity::class.java))
-            loadData()
-
-        }
+        confirmBtn.setOnClickListener { loadData() }
     }
 
     private fun loadData() {
@@ -60,12 +49,12 @@ class SetupActivity : AppCompatActivity() {
         var numExpansions = 0
         var numGames = 0
 
-        Thread(Runnable {
+        Thread{
             var url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username","") +
                     "&subtype=boardgame&excludesubtype=boardgameexpansion" + "&stats=1"
-            var games = XmlParserTask().execute(url)
+            var games = FetchData().execute(url)
             if(games.get().isEmpty()) {
-                games = XmlParserTask().execute(url)
+                games = FetchData().execute(url)
             }
             runOnUiThread {
                 progressBar.setProgress(20, true)
@@ -74,9 +63,9 @@ class SetupActivity : AppCompatActivity() {
 
             url = "https://boardgamegeek.com/xmlapi2/collection?username=" + cache.getString("username", "") +
                     "&subtype=boardgameexpansion" + "&stats=1"
-            var expansions = XmlParserTask().execute(url)
+            var expansions = FetchData().execute(url)
             if(expansions.get().isEmpty()) {
-                expansions = XmlParserTask().execute(url)
+                expansions = FetchData().execute(url)
             }
             runOnUiThread {
                 progressBar.setProgress(40, true)
@@ -90,8 +79,8 @@ class SetupActivity : AppCompatActivity() {
             }
             Thread.sleep(250)
 
-            var existingGameIds = mutableListOf<Int>()
-            var existingExpansionIds = mutableListOf<Int>()
+            val existingGameIds = mutableListOf<Int>()
+            val existingExpansionIds = mutableListOf<Int>()
 
             for (game in expansions.get()) {
                 if (existingExpansionIds.contains(game.id)) continue
@@ -124,7 +113,7 @@ class SetupActivity : AppCompatActivity() {
             }
             startActivity(Intent(this, MainMenuActivity::class.java))
 
-        }).start()
+        }.start()
 
     }
 }

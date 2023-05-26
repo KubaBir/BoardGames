@@ -9,7 +9,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
 
-class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
+class FetchData : AsyncTask<String, Void, List<Game>>() {
 
     override fun doInBackground(vararg urls: String?): List<Game> {
         val url = URL(urls[0])
@@ -63,8 +63,8 @@ class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
                 val stats: Node? = elem.getElementsByTagName("stats").item(0)
                 if (stats != null) {
                     val stats = stats as org.w3c.dom.Element
-                    var temp1 = stats.getAttribute("minplayers")
-                    var temp2 = stats.getAttribute("maxplayers")
+                    val temp1 = stats.getAttribute("minplayers")
+                    val temp2 = stats.getAttribute("maxplayers")
 
                     if (temp1 != "") {
                         minPlayers = temp1.toInt()
@@ -79,7 +79,7 @@ class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
                         var avgRatingField = rating.getElementsByTagName("average")?.item(0)
                         if (avgRatingField != null) {
                             avgRatingField = avgRatingField as org.w3c.dom.Element
-                            var temp3 = avgRatingField.getAttribute("value")
+                            val temp3 = avgRatingField.getAttribute("value")
                             if (temp3 != "") {
                                 avgRating = temp3.toFloat()
                             }

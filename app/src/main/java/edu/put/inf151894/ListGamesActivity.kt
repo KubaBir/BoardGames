@@ -21,7 +21,7 @@ class ListGamesActivity : AppCompatActivity() {
 
     private lateinit var titleText: TextView
 
-    var page: Int = 1
+    private var page: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +59,7 @@ class ListGamesActivity : AppCompatActivity() {
 
         val adapter = Adapter(this, games)
 
-        var intent: Intent = Intent(this, GameDetailActivity::class.java)
+        val intent = Intent(this, GameDetailActivity::class.java)
 
         recyclerView.adapter = adapter
         adapter.setOnClickListener(object: Adapter.OnClickListener {
@@ -77,7 +77,7 @@ class ListGamesActivity : AppCompatActivity() {
             startActivity(Intent(this, MainMenuActivity::class.java))
         }
         nextPageButton.setOnClickListener {
-            var paginationIntent: Intent = Intent(this, ListGamesActivity::class.java)
+            val paginationIntent = Intent(this, ListGamesActivity::class.java)
             paginationIntent.putExtra("page", page+1)
             paginationIntent.putExtra("type", type)
             Log.e("extra",type.toString())
@@ -85,7 +85,7 @@ class ListGamesActivity : AppCompatActivity() {
             startActivity(paginationIntent)
         }
         prevPageButton.setOnClickListener {
-            var paginationIntent: Intent = Intent(this, ListGamesActivity::class.java)
+            val paginationIntent = Intent(this, ListGamesActivity::class.java)
             paginationIntent.putExtra("page", page-1)
             paginationIntent.putExtra("type", type)
             Log.e("extra",type.toString())
