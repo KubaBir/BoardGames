@@ -65,9 +65,9 @@ class ListGamesActivity : AppCompatActivity() {
         adapter.setOnClickListener(object: Adapter.OnClickListener {
             override fun onClick(position: Int, model: Game) {
                 if (type == "games") {
-                    intent.putExtra("type", "game")
+                    intent.putExtra("type", "games")
                 } else {
-                    intent.putExtra("type", "expansion")
+                    intent.putExtra("type", "expansions")
                 }
                 intent.putExtra("gameId", model.id)
                 startActivity(intent)

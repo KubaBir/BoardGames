@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import java.time.LocalDate
 
 class MainMenuActivity : AppCompatActivity() {
@@ -27,7 +29,7 @@ class MainMenuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
 
-        val cache = getSharedPreferences("cache", Context.MODE_PRIVATE)
+        val cache = getSharedPreferences("cache", MODE_PRIVATE)
         if(!cache.getBoolean("configDone", false)) {
             // List games if account is linked
             startActivity(Intent(this, SetupActivity::class.java))
@@ -49,24 +51,34 @@ class MainMenuActivity : AppCompatActivity() {
         numExpansions.text = cache.getString("numExpansions", "0")
 
         restoreDefaults.setOnClickListener {
-            // Format cache
-            cache.edit().clear().apply()
+            val items = arrayOf("Cancel", "Format Data")
+            val dialog = AlertDialog.Builder(this)
+                .setTitle("Do you want to remove you data?")
+                .setItems(items) { _, choice ->
+                    when (choice){
+                        0 -> {}
+                        1 -> {
+                            // Format cache
+                            cache.edit().clear().apply()
 
-            // Format db
-            val dbHandler = MyDBHandler(this, null,null,1)
-            dbHandler.format()
-            dbHandler.close()
+                            // Format db
+                            val dbHandler = MyDBHandler(this, null,null,1)
+                            dbHandler.format()
+                            dbHandler.close()
 
-            // Enter configuration
-            startActivity(Intent(this, SetupActivity::class.java))
+                            // Enter configuration
+                            startActivity(Intent(this, SetupActivity::class.java))
+                        }
+                    }
+                }
+                .create()
+            dialog.show()
+
         }
 
         sync.setOnClickListener {
-            //val dbHandler = MyDBHandler(this, null,null,1)
-
-            // IMPLEMENT SYNC
-
-            cache.edit().putString("lastSync", LocalDate.now().toString()).apply()
+            var intent = Intent(this, SyncActivity::class.java)
+            startActivity(intent)
         }
 
         gameList.setOnClickListener {

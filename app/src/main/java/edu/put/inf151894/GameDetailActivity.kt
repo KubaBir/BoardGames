@@ -1,6 +1,7 @@
 package edu.put.inf151894
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -66,7 +67,7 @@ class GameDetailActivity : AppCompatActivity() {
         val type = intent.getStringExtra("type")
         dbHandler = MyDBHandler(this, null,null,1)
 
-        if (type == "game") {
+        if (type == "games") {
             game = dbHandler.getGameById(gameId)
         } else {
             game = dbHandler.getExpansionById(gameId)
@@ -105,6 +106,11 @@ class GameDetailActivity : AppCompatActivity() {
             avgRating.visibility = View.INVISIBLE
             playerCount.visibility = View.INVISIBLE
             releasedIn.visibility = View.INVISIBLE
+
+            viewBinding.btnPrev.visibility = View.INVISIBLE
+            viewBinding.btnNext.visibility = View.INVISIBLE
+            viewBinding.btnAdd.visibility = View.INVISIBLE
+            viewBinding.btnDelete.visibility = View.INVISIBLE
         }
         imageFullScreen.setOnClickListener {
             image.visibility = View.VISIBLE
@@ -112,6 +118,11 @@ class GameDetailActivity : AppCompatActivity() {
             avgRating.visibility = View.VISIBLE
             playerCount.visibility = View.VISIBLE
             releasedIn.visibility = View.VISIBLE
+
+            viewBinding.btnPrev.visibility = View.VISIBLE
+            viewBinding.btnNext.visibility = View.VISIBLE
+            viewBinding.btnAdd.visibility = View.VISIBLE
+            viewBinding.btnDelete.visibility = View.VISIBLE
         }
         viewBinding.btnAdd.setOnClickListener {
             showImageSourceSelector()
@@ -148,6 +159,11 @@ class GameDetailActivity : AppCompatActivity() {
         }
         viewBinding.btnTakePhoto.setOnClickListener {
             takePhoto()
+        }
+        viewBinding.btnBack.setOnClickListener {
+            val backIntent = Intent(this, ListGamesActivity::class.java)
+            backIntent.putExtra("type",type)
+            startActivity(backIntent)
         }
     }
 
