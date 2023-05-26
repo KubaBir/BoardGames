@@ -36,6 +36,7 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        confirmBtn.isEnabled = false
         val cache = getSharedPreferences("cache", MODE_PRIVATE)
         val username = usernameInput.text.toString()
         cache.edit().putString("username", username).apply()
@@ -109,6 +110,7 @@ class SetupActivity : AppCompatActivity() {
 
             runOnUiThread {
                 progressBar.setProgress(100, true)
+                confirmBtn.isEnabled = true
                 Toast.makeText(this, "Loading completed!", Toast.LENGTH_SHORT).show()
             }
             startActivity(Intent(this, MainMenuActivity::class.java))

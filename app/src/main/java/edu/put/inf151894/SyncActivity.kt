@@ -47,11 +47,13 @@ class SyncActivity : AppCompatActivity() {
     }
 
     private fun sync() {
+        btnSync.isEnabled = false
         val cache = getSharedPreferences("cache", MODE_PRIVATE)
         val lastSyncLong = cache.getLong("lastSyncMillis", Instant.now().minusSeconds(100000).toEpochMilli())
 
         if(lastSyncLong < Instant.now().minusSeconds(86400).toEpochMilli()) {
             Toast.makeText(this, "Synchronization started", Toast.LENGTH_SHORT).show()
+            cache.edit().putLong("lastSyncMillis", Instant.now().toEpochMilli()).apply()
             btnBack.visibility = View.INVISIBLE
             syncProgressText.visibility = View.VISIBLE
             progressBar.visibility = View.VISIBLE
@@ -114,9 +116,9 @@ class SyncActivity : AppCompatActivity() {
                     progressBar.setProgress(100, true)
 
                     cache.edit().putString("lastSync", LocalDate.now().toString()).apply()
-                    cache.edit().putLong("lastSyncMillis", Instant.now().toEpochMilli()).apply()
                     lastSync.text = cache.getString("lastSync", "")
                     btnBack.visibility = View.VISIBLE
+                    btnSync.isEnabled = true
 
                     Toast.makeText(this, "Synchronization completed!", Toast.LENGTH_SHORT).show()
                 }
