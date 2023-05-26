@@ -5,7 +5,7 @@ class Game {
     var title: String? = null
     var titlePL: String? = null
     var released: Int = 0
-    var id: Int? = null
+    var id: Int = 0
     var image: String? = null
     var thumbnail: String? = null
     var minPlayers: Int = 0
@@ -17,7 +17,7 @@ class Game {
         title: String?,
         titlePL: String?,
         released: Int,
-        id: Int?,
+        id: Int,
         image: String?,
         thumbnail: String?,
         minPlayers: Int,

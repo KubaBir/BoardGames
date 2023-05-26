@@ -3,6 +3,7 @@ package edu.put.inf151894
 
 import android.os.AsyncTask
 import android.util.Log
+import org.w3c.dom.Node
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -34,6 +35,7 @@ class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
         val doc = docBuilder.parse(inputStream)
         doc.documentElement.normalize()
 
+
         val itemList = doc.getElementsByTagName("item")
         val games = mutableListOf<Game>()
         for (i in 0 until itemList.length) {
@@ -53,24 +55,38 @@ class XmlParserTask : AsyncTask<String, Void, List<Game>>() {
                 val thumbnailElement = elem.getElementsByTagName("thumbnail").item(0)
                 val thumbnail = thumbnailElement?.textContent ?: ""
 
-                val id = elem.getAttribute("objectid").toInt() ?: 0
+                val id = elem.getAttribute("objectid").toInt()
 
                 var minPlayers = 0
                 var maxPlayers = 0
                 var avgRating = 0f
-                val testStats = elem.getElementsByTagName("stats").item(0)
-//                if (testStats != null) {
-//                    val stats = testStats as org.w3c.dom.Element
-//                    minPlayers = stats.getAttribute("minplayers")?.toInt() ?: 0
-//                    maxPlayers = stats.getAttribute("maxplayers")?.toInt() ?: 0
-//
-//                    val rating = stats.getElementsByTagName("rating")?.item(0) as org.w3c.dom.Element
-//                    val avgRatingField = rating.getElementsByTagName("average")?.item(0) as org.w3c.dom.Element
-//                    avgRating = avgRatingField.getAttribute("value")?.toFloat() ?: 0f
-//                }
+                val stats: Node? = elem.getElementsByTagName("stats").item(0)
+                if (stats != null) {
+                    val stats = stats as org.w3c.dom.Element
+                    var temp1 = stats.getAttribute("minplayers")
+                    var temp2 = stats.getAttribute("maxplayers")
 
+                    if (temp1 != "") {
+                        minPlayers = temp1.toInt()
+                    }
+                    if (temp2 != "") {
+                        maxPlayers = temp2.toInt()
+                    }
 
+                    var rating = stats.getElementsByTagName("rating")?.item(0)
+                    if (rating != null) {
+                        rating = rating as org.w3c.dom.Element
+                        var avgRatingField = rating.getElementsByTagName("average")?.item(0)
+                        if (avgRatingField != null) {
+                            avgRatingField = avgRatingField as org.w3c.dom.Element
+                            var temp3 = avgRatingField.getAttribute("value")
+                            if (temp3 != "") {
+                                avgRating = temp3.toFloat()
+                            }
+                        }
+                    }
 
+                }
 
 
                 val game = Game(

@@ -27,6 +27,12 @@ class MainMenuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
 
+        val cache = getSharedPreferences("cache", Context.MODE_PRIVATE)
+        if(!cache.getBoolean("configDone", false)) {
+            // List games if account is linked
+            startActivity(Intent(this, SetupActivity::class.java))
+        }
+
         usernameField = findViewById(R.id.username)
         numGames = findViewById(R.id.numGames)
         numExpansions = findViewById(R.id.numExpansions)
@@ -36,8 +42,6 @@ class MainMenuActivity : AppCompatActivity() {
         expansionList = findViewById(R.id.expansionList)
         sync = findViewById(R.id.sync)
         restoreDefaults = findViewById(R.id.restoreDefaults)
-
-        val cache = getSharedPreferences("cache", Context.MODE_PRIVATE)
 
         usernameField.text = cache.getString("username", "")
         lastSync.text = cache.getString("lastSync", "Never")

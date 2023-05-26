@@ -5,6 +5,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -23,6 +24,7 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import coil.load
 import edu.put.inf151894.databinding.ActivityGameDetailViewBinding
@@ -92,6 +94,12 @@ class GameDetailActivity : AppCompatActivity() {
 
 
         image.setOnClickListener {
+            if (currentPictureIndex == 0) {
+                imageFullScreen.load(game.image)
+            }else {
+                imageFullScreen.load(pictures[currentPictureIndex-1])
+            }
+
             imageFullScreen.visibility = View.VISIBLE
             image.visibility = View.INVISIBLE
             avgRating.visibility = View.INVISIBLE
@@ -134,6 +142,7 @@ class GameDetailActivity : AppCompatActivity() {
                 dbHandler.deletePictureById(picture)
                 pictures = dbHandler.getPicturesByGame(game)
                 image.load(game.image)
+                imageFullScreen.load(game.image)
                 currentPictureIndex = 0
             }
         }
@@ -174,6 +183,7 @@ class GameDetailActivity : AppCompatActivity() {
             }
         }
 
+
         // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(contentResolver,
@@ -191,12 +201,12 @@ class GameDetailActivity : AppCompatActivity() {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun
-                        onImageSaved(output: ImageCapture.OutputFileResults){
+                override fun onImageSaved(output: ImageCapture.OutputFileResults){
                     val msg = "Photo saved"
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    Log.d(TAG, msg)
                     dbHandler.addPicture(game, output.savedUri.toString())
+                    Log.i(TAG, "Added picture at ${output.savedUri.toString()}")
+
                     pictures = dbHandler.getPicturesByGame(game)
 
                     preview.visibility = View.GONE
@@ -286,6 +296,8 @@ class GameDetailActivity : AppCompatActivity() {
             if (data != null && data.data != null) {
                 val selectedImageUri = data.data
                 dbHandler.addPicture(game, selectedImageUri.toString())
+                Log.i(TAG, "Added picture at ${selectedImageUri.toString()}")
+
                 pictures = dbHandler.getPicturesByGame(game)
             }
         }

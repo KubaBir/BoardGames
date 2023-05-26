@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.min
 
 class ListGamesActivity : AppCompatActivity() {
 
@@ -53,8 +54,8 @@ class ListGamesActivity : AppCompatActivity() {
             titleText.text = "Expansions"
 
         }
-
-        games = games.subList((page-1)*50,page*50)
+        if (games.size < page*50) nextPageButton.visibility = View.GONE
+        games = games.subList((page-1)*50, min(page*50, games.size))
 
         val adapter = Adapter(this, games)
 
